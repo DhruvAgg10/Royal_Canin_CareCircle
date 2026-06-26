@@ -1,0 +1,13 @@
+{
+  "name": "Royal Canin CareCircle",
+  "description": "A low-noise, vet-connected pet care assistant for early-stage puppy care (Day 0–3 months), powered by AI and professional vet guidance.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "AI-powered triage",
+    "Vet connection",
+    "Proactive lifecycle alerts",
+    "Personalized puppy care guides"
+  ]
+}

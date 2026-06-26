@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper: Is the user authenticated?
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: Is it the owner of the document?
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) 
+        && request.resource.data.keys().hasAll(['uid', 'breed', 'ageInWeeks', 'preferenceLevel'])
+        && request.resource.data.uid == request.auth.uid;
+      allow update: if isOwner(userId);
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+      }
+
+      // Orders subcollection
+      match /orders/{orderId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId);
+      }
+    }
+
+    // Vets - Publicly readable by signed in users
+    match /vets/{vetId} {
+      allow read: if isSignedIn();
+      allow write: if false; // Only manageable via admin/backend
+    }
+
+    // Public Pet Registrations
+    match /registrations/{registrationId} {
+      allow read: if true; // Public directories are globally viewable
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasAll(['ownerName', 'city', 'petType', 'breed', 'ageInWeeks', 'preferenceLevel', 'createdAt', 'userId']);
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Puppy owner profile details",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "breed": { "type": "string", "description": "Puppy breed" },
+        "ageInWeeks": { "type": "integer", "description": "Age of puppy in weeks" },
+        "location": { "type": "string", "description": "User city or shared location name" },
+        "preferenceLevel": { "type": "string", "enum": ["Minimal", "Guided", "Active"] },
+        "onboardingComplete": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "breed", "ageInWeeks", "preferenceLevel"]
+    },
+    "Vet": {
+      "title": "Vet",
+      "description": "Veterinarian details",
+      "type": "object",
+      "properties": {
+        "vetId": { "type": "string" },
+        "name": { "type": "string" },
+        "location": { "type": "string" },
+        "rating": { "type": "number" },
+        "availability": { "type": "string" },
+        "specialties": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["vetId", "name", "location", "rating"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message in 1:1 conversation",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "role": { "type": "string", "enum": ["user", "assistant", "vet"] }
+      },
+      "required": ["senderId", "text", "timestamp", "role"]
+    },
+    "PetRegistration": {
+      "title": "PetRegistration",
+      "description": "A single pet registration with city, type, breed and age info",
+      "type": "object",
+      "properties": {
+        "registrationId": { "type": "string", "description": "Unique record key" },
+        "ownerName": { "type": "string" },
+        "city": { "type": "string", "description": "Owner's city location" },
+        "petType": { "type": "string", "enum": ["Dog", "Cat"] },
+        "breed": { "type": "string" },
+        "ageInWeeks": { "type": "integer" },
+        "preferenceLevel": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["ownerName", "city", "petType", "breed", "ageInWeeks", "preferenceLevel", "createdAt", "userId"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Quick commerce order details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productName": { "type": "string" },
+        "price": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "invoiceNo": { "type": "string" }
+      },
+      "required": ["id", "productName", "price", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Root user document"
+    },
+    "/vets/{vetId}": {
+      "schema": "Vet",
+      "description": "Available veterinarians"
+    },
+    "/users/{userId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Private chat history for the user"
+    },
+    "/users/{userId}/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Quick commerce order logs"
+    },
+    "/registrations/{registrationId}": {
+      "schema": "PetRegistration",
+      "description": "Publicly searchable pet registry clustered by city, type, breed, and age"
+    }
+  }
+}
